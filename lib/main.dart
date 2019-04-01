@@ -1,10 +1,39 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'BottomNavigationWidget.dart';
-void main(){
-  runApp(new MyApp());
+void main() {
+  runApp(MaterialApp(
+    home: MyApp(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  static const platform = const MethodChannel("com.kiko.wifi/act");
+  List<String> _msg;
+  Future<void> getMsg() async {
+     List<String> msg;
+    try {
+      msg=await platform.invokeListMethod('getList');
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
+    setState(() {
+      _msg=msg;
+    });
+  }
+  showToast(String msg) async {
+    try {
+      await platform.invokeMethod("showToast",{"msg":msg});
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -12,6 +41,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       home: BottomNavigationWidget(),
     );
+    
   }
 }
-
