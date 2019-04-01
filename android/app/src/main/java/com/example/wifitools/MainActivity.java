@@ -36,8 +36,8 @@ public class MainActivity extends FlutterActivity {
           }
         });
   }
-    List<String> getList(){
-      ScanDeviceUtile s=new ScanDeviceUtile();
-      return  s.scan();
+  List<String> getList(){
+    ScanDeviceUtile s=new ScanDeviceUtile();
+    return  s.scan();
   }
 }

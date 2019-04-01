@@ -80,9 +80,14 @@ class _HomeScreenState extends State<HomeScreen> {
   //使用后台传送过来的列表构建IP列表项
   Widget _getItem(String s){
     //print(s);
-    return  ListTile(
+    return GestureDetector(
+      onTap: (){
+        showToast('你点击了'+s);
+      },
+      child:  ListTile(
         title: Text(s),
         leading: Icon(Icons.devices),
+    ),
     );
   }
   
