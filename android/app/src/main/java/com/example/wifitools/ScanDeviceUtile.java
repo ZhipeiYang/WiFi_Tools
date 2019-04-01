@@ -51,7 +51,6 @@ public class ScanDeviceUtile {
         if (TextUtils.isEmpty(mLocAddress)) {
             //ALog.e(TAG, "扫描失败，请检查wifi网络");
             System.out.println("扫描失败，请检查wifi网络");
-            //Toast.makeText(, "扫描失败，请检查wifi网络", Toast.LENGTH_SHORT).show();
             return null;
         }
 

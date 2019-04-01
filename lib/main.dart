@@ -13,7 +13,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with AutomaticKeepAliveClientMixin{
   static const platform = const MethodChannel("com.kiko.wifi/act");
   List<String> _msg;
   Future<void> getMsg() async {
@@ -35,12 +35,13 @@ class _MyAppState extends State<MyApp> {
     }
   }
   @override
+  bool get wantKeepAlive => true;
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Wifi_Tools',
       theme: ThemeData.light(),
       home: BottomNavigationWidget(),
     );
-    
   }
 }
