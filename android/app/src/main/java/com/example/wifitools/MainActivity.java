@@ -2,13 +2,16 @@ package com.example.wifitools;
 
 import android.os.Bundle;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.List;
 import android.text.TextUtils;
 import android.widget.Toast;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
-
+import org.json.*;
 //import ScanDeviceUtile;
 
 public class MainActivity extends FlutterActivity {
@@ -38,6 +41,10 @@ public class MainActivity extends FlutterActivity {
   }
   List<String> getList(){
     ScanDeviceUtile s=new ScanDeviceUtile();
+    Gson gson=new Gson();
+    String result;
+      result = gson.toJson(s.scan());
+      System.out.println(result);
     return  s.scan();
   }
 }

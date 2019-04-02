@@ -38,6 +38,8 @@ public class ScanDeviceUtile {
     private List<String> mIpList = new ArrayList<String>();// ping成功的IP地址
     private ThreadPoolExecutor mExecutor;// 线程池对象
 
+    
+
     /**
      * <扫描局域网内ip，找到对应服务器>
      *
