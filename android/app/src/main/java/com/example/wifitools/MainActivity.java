@@ -12,8 +12,6 @@ import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 import org.json.*;
-//import ScanDeviceUtile;
-
 public class MainActivity extends FlutterActivity {
   private static final String CHANNEL = "com.kiko.wifi/act";
   @Override
@@ -23,14 +21,16 @@ public class MainActivity extends FlutterActivity {
 
     new MethodChannel(getFlutterView(),CHANNEL).setMethodCallHandler(
         (call,result)->{
-            if(call.method.equals("getList")){
-                List<String> list=getList();;
-                if(list!=null){
-                    result.success(list);
+              if(call.method.equals("getDevices")){
+                String devices=getDevices();
+                //System.out.println("Json数据:"+devices);
+
+                if(devices.length()!=0){
+                  result.success(devices);
                 }else{
-                    result.error("UNAVAILABLE", "IpListIsNull", null);
+                  result.error("UNVAILABLE","Devices JSon is Empty",null);
                 }
-            }else if (call.method.equals("showToast")) {
+              }else if (call.method.equals("showToast")) {
               if (call.hasArgument("msg") && !TextUtils.isEmpty(call.argument("msg").toString())) {
                   Toast.makeText(MainActivity.this, call.argument("msg").toString(), Toast.LENGTH_SHORT).show();
               } else {
@@ -39,12 +39,13 @@ public class MainActivity extends FlutterActivity {
           }
         });
   }
-  List<String> getList(){
+
+  String getDevices()
+  {
     ScanDeviceUtile s=new ScanDeviceUtile();
     Gson gson=new Gson();
     String result;
-      result = gson.toJson(s.scan());
-      System.out.println(result);
-    return  s.scan();
+    result = gson.toJson(s.scan());
+    return result;
   }
 }

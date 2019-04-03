@@ -35,17 +35,17 @@ public class ScanDeviceUtile {
     private Runtime mRun = Runtime.getRuntime();// 获取当前运行环境，来执行ping，相当于windows的cmd
     private Process mProcess = null;// 进程
     private String mPing = "ping -c 1 -w 3 ";// 其中 -c 1为发送的次数，-w 表示发送后等待响应的时间
-    private List<String> mIpList = new ArrayList<String>();// ping成功的IP地址
+   // private List<String> mIpList = new ArrayList<String>();// ping成功的IP地址
     private ThreadPoolExecutor mExecutor;// 线程池对象
 
-    
+    private List<DeviceInfo>mDevices=new ArrayList<DeviceInfo>();//所有扫描到的设备信息
 
     /**
      * <扫描局域网内ip，找到对应服务器>
      *
      * @return void
      */
-    public List<String> scan() {
+    public List<DeviceInfo> scan() {
         mDevAddress = getHostIP();// 获取本机IP地址
         mLocAddress = getLocAddrIndex(mDevAddress);// 获取本地ip前缀
        // ALog.e(TAG, "开始扫描设备,本机Ip为：" + mDevAddress);
@@ -88,7 +88,11 @@ public class ScanDeviceUtile {
 //                        ALog.e(TAG, "正在扫描的IP地址为：" + currnetIp + "返回值为：" + result);
                         if (result == 0) {
 //                            ALog.e(TAG, "扫描成功,Ip地址为：" + currnetIp);
-                            mIpList.add(currnetIp);
+                            //mIpList.add(currnetIp);
+                            InetAddress host = InetAddress.getByName(currnetIp);
+	            	        String hostName=host.getHostName();
+	            	        DeviceInfo deviceInfo=new DeviceInfo(hostName, currnetIp);
+	            	        mDevices.add(deviceInfo);
                         } else {
                             // 扫描失败
 //                            ALog.e(TAG, "扫描失败");
@@ -112,10 +116,11 @@ public class ScanDeviceUtile {
             try {
                 if (mExecutor.isTerminated()) {// 扫描结束,开始验证
                     //ALog.e(TAG, "扫描结束,总共成功扫描到" + mIpList.size() + "个设备.");
-                    System.out.println("扫描结束,总共成功扫描到" + mIpList.size() + "个设备.");
+                    //System.out.println("扫描结束,总共成功扫描到" + mDevices.size() + "个设备.");
                    // ALog.e("设备列表："+new Gson().toJson(mIpList));
                     //System.out.println("设备列表："+new Gson().toJson(mIpList));
-                    return mIpList;
+                    //return mIpList;
+                    return mDevices;
                 }
             } catch (Exception e) {
                 // handle exception
@@ -222,5 +227,6 @@ public class ScanDeviceUtile {
         }
         return null;
     }
+   
 
 }

@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'BottomNavigationWidget.dart';
 void main() {
   runApp(MaterialApp(
@@ -14,26 +12,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with AutomaticKeepAliveClientMixin{
-  static const platform = const MethodChannel("com.kiko.wifi/act");
-  List<String> _msg;
-  Future<void> getMsg() async {
-     List<String> msg;
-    try {
-      msg=await platform.invokeListMethod('getList');
-    } on PlatformException catch (e) {
-      print(e.toString());
-    }
-    setState(() {
-      _msg=msg;
-    });
-  }
-  showToast(String msg) async {
-    try {
-      await platform.invokeMethod("showToast",{"msg":msg});
-    } on PlatformException catch (e) {
-      print(e.toString());
-    }
-  }
+ 
   @override
   bool get wantKeepAlive => true;
   @override
