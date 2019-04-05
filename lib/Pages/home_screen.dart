@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   //动态构建ListView用以展示搜索到的设备IP
-  Widget _getListView() {
+  _getListView() {
     if (listFlag == 0) {
       return Text('当前列表为空，请刷新');
     } else if (listFlag == 1) {
