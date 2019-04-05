@@ -14,7 +14,7 @@ class BottomNavigationWidget extends StatefulWidget {
 }
 
 class _BottomNavigationWidgetState extends State<BottomNavigationWidget> {
-  final _BottomNavigationColor=Colors.blue;
+  final _bottom_navigation_color=Colors.blue;
   int _currentIndex=0;
   List<Widget> pageList=List();
   @override
@@ -35,30 +35,30 @@ class _BottomNavigationWidgetState extends State<BottomNavigationWidget> {
           BottomNavigationBarItem(
             icon:Icon(
               Icons.home,
-              color: _BottomNavigationColor,
+              color: _bottom_navigation_color,
             ),
-            title: Text('主页',style: TextStyle(color: _BottomNavigationColor),)
+            title: Text('主页',style: TextStyle(color: _bottom_navigation_color),)
           ),
            BottomNavigationBarItem(
             icon:Icon(
               Icons.wifi,
-              color: _BottomNavigationColor,
+              color: _bottom_navigation_color,
             ),
-            title: Text('测速',style: TextStyle(color: _BottomNavigationColor),)
+            title: Text('测速',style: TextStyle(color: _bottom_navigation_color),)
           ),
            BottomNavigationBarItem(
             icon:Icon(
               Icons.airplay,
-              color: _BottomNavigationColor,
+              color: _bottom_navigation_color,
             ),
-            title: Text('工具',style: TextStyle(color: _BottomNavigationColor),)
+            title: Text('工具',style: TextStyle(color: _bottom_navigation_color),)
           ),
           BottomNavigationBarItem(
             icon:Icon(
               Icons.settings,
-              color: _BottomNavigationColor,
+              color: _bottom_navigation_color,
             ),
-            title: Text('设置',style: TextStyle(color: _BottomNavigationColor),)
+            title: Text('设置',style: TextStyle(color: _bottom_navigation_color),)
           ),
         ],
         //高亮的部分
