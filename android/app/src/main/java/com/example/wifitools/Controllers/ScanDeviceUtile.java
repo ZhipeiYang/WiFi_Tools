@@ -14,8 +14,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-
-
 public class ScanDeviceUtile {
 
     private static final String TAG = ScanDeviceUtile.class.getSimpleName();
@@ -30,10 +28,10 @@ public class ScanDeviceUtile {
     private Runtime mRun = Runtime.getRuntime();// 获取当前运行环境，来执行ping，相当于windows的cmd
     private Process mProcess = null;// 进程
     private String mPing = "ping -c 1 -w 3 ";// 其中 -c 1为发送的次数，-w 表示发送后等待响应的时间
-   // private List<String> mIpList = new ArrayList<String>();// ping成功的IP地址
+    // private List<String> mIpList = new ArrayList<String>();// ping成功的IP地址
     private ThreadPoolExecutor mExecutor;// 线程池对象
 
-    private List<DeviceInfo>mDevices=new ArrayList<DeviceInfo>();//所有扫描到的设备信息
+    private List<DeviceInfo> mDevices = new ArrayList<DeviceInfo>();// 所有扫描到的设备信息
 
     /**
      * <扫描局域网内ip，找到对应服务器>
@@ -43,10 +41,10 @@ public class ScanDeviceUtile {
     public List<DeviceInfo> scan() {
         mDevAddress = getHostIP();// 获取本机IP地址
         mLocAddress = getLocAddrIndex(mDevAddress);// 获取本地ip前缀
-       // ALog.e(TAG, "开始扫描设备,本机Ip为：" + mDevAddress);
+        // ALog.e(TAG, "开始扫描设备,本机Ip为：" + mDevAddress);
         System.out.println("开始扫描设备,本机Ip为：" + mDevAddress);
         if (TextUtils.isEmpty(mLocAddress)) {
-            //ALog.e(TAG, "扫描失败，请检查wifi网络");
+            // ALog.e(TAG, "扫描失败，请检查wifi网络");
             System.out.println("扫描失败，请检查wifi网络");
             return null;
         }
@@ -54,12 +52,10 @@ public class ScanDeviceUtile {
         /**
          * 1.核心池大小 2.线程池最大线程数 3.表示线程没有任务执行时最多保持多久时间会终止
          * 4.参数keepAliveTime的时间单位，有7种取值,当前为毫秒
-         * 5.一个阻塞队列，用来存储等待执行的任务，这个参数的选择也很重要，会对线程池的运行过程产生重大影响
-         * ，一般来说，这里的阻塞队列有以下几种选择：
+         * 5.一个阻塞队列，用来存储等待执行的任务，这个参数的选择也很重要，会对线程池的运行过程产生重大影响 ，一般来说，这里的阻塞队列有以下几种选择：
          */
-        mExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_IMUM_POOL_SIZE,
-                2000, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(
-                CORE_POOL_SIZE));
+        mExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_IMUM_POOL_SIZE, 2000, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(CORE_POOL_SIZE));
 
         // 新建线程池
         for (int i = 1; i < 255; i++) {// 创建256个线程分别去ping
@@ -69,9 +65,8 @@ public class ScanDeviceUtile {
 
                 @Override
                 public void run() {
-                    //Auto-generated method stub
-                    String ping = ScanDeviceUtile.this.mPing + mLocAddress
-                            + lastAddress;
+                    // Auto-generated method stub
+                    String ping = ScanDeviceUtile.this.mPing + mLocAddress + lastAddress;
                     String currnetIp = mLocAddress + lastAddress;
                     if (mDevAddress.equals(currnetIp)) // 如果与本机IP地址相同,跳过
                         return;
@@ -80,20 +75,21 @@ public class ScanDeviceUtile {
                         mProcess = mRun.exec(ping);
 
                         int result = mProcess.waitFor();
-//                        ALog.e(TAG, "正在扫描的IP地址为：" + currnetIp + "返回值为：" + result);
+                        // ALog.e(TAG, "正在扫描的IP地址为：" + currnetIp + "返回值为：" + result);
                         if (result == 0) {
-//                            ALog.e(TAG, "扫描成功,Ip地址为：" + currnetIp);
-                            //mIpList.add(currnetIp);
+                            // ALog.e(TAG, "扫描成功,Ip地址为：" + currnetIp);
+                            // mIpList.add(currnetIp);
                             InetAddress host = InetAddress.getByName(currnetIp);
-	            	        String hostName=host.getHostName();
-	            	        DeviceInfo deviceInfo=new DeviceInfo(hostName, currnetIp);
-	            	        mDevices.add(deviceInfo);
+                            String hostName = host.getCanonicalHostName();
+                            
+                            DeviceInfo deviceInfo = new DeviceInfo(hostName, currnetIp);
+                            mDevices.add(deviceInfo);
                         } else {
                             // 扫描失败
-//                            ALog.e(TAG, "扫描失败");
+                            // ALog.e(TAG, "扫描失败");
                         }
                     } catch (Exception e) {
-                       // ALog.e(TAG, "扫描异常" + e.toString());
+                        // ALog.e(TAG, "扫描异常" + e.toString());
                         System.out.println("扫描异常" + e.toString());
                     } finally {
                         if (mProcess != null)
@@ -110,11 +106,11 @@ public class ScanDeviceUtile {
         while (true) {
             try {
                 if (mExecutor.isTerminated()) {// 扫描结束,开始验证
-                    //ALog.e(TAG, "扫描结束,总共成功扫描到" + mIpList.size() + "个设备.");
-                    //System.out.println("扫描结束,总共成功扫描到" + mDevices.size() + "个设备.");
-                   // ALog.e("设备列表："+new Gson().toJson(mIpList));
-                    //System.out.println("设备列表："+new Gson().toJson(mIpList));
-                    //return mIpList;
+                    // ALog.e(TAG, "扫描结束,总共成功扫描到" + mIpList.size() + "个设备.");
+                    // System.out.println("扫描结束,总共成功扫描到" + mDevices.size() + "个设备.");
+                    // ALog.e("设备列表："+new Gson().toJson(mIpList));
+                    // System.out.println("设备列表："+new Gson().toJson(mIpList));
+                    // return mIpList;
                     return mDevices;
                 }
             } catch (Exception e) {
@@ -150,8 +146,7 @@ public class ScanDeviceUtile {
         String ipaddress = "";
 
         try {
-            Enumeration<NetworkInterface> en = NetworkInterface
-                    .getNetworkInterfaces();
+            Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
             // 遍历所用的网络接口
             while (en.hasMoreElements()) {
                 NetworkInterface networks = en.nextElement();
@@ -160,24 +155,25 @@ public class ScanDeviceUtile {
                 // 遍历每一个接口绑定的所有ip
                 while (address.hasMoreElements()) {
                     InetAddress ip = address.nextElement();
-                    if (!ip.isLoopbackAddress()
-                            && (ip instanceof Inet4Address)) {
+                    if (!ip.isLoopbackAddress() && (ip instanceof Inet4Address)) {
                         ipaddress = ip.getHostAddress();
                     }
                 }
             }
         } catch (SocketException e) {
-            //ALog.e("", "获取本地ip地址失败");
+            // ALog.e("", "获取本地ip地址失败");
             System.out.println("获取本地ip地址失败");
             e.printStackTrace();
         }
 
-       // ALog.e(TAG, "本机IP:" + ipaddress);
+        // ALog.e(TAG, "本机IP:" + ipaddress);
         System.out.println("本机IP:" + ipaddress);
         return ipaddress;
     }
+
     /**
      * 获取ip地址
+     * 
      * @return
      */
     public static String getHostIP() {
@@ -202,18 +198,18 @@ public class ScanDeviceUtile {
                 }
             }
         } catch (SocketException e) {
-           // ALog.e("yao", "SocketException");
+            // ALog.e("yao", "SocketException");
             System.out.println("SocketException");
             e.printStackTrace();
         }
         return hostIp;
 
     }
+
     /**
      * <获取本机IP前缀>
      *
-     * @param devAddress
-     *            // 本机IP地址
+     * @param devAddress // 本机IP地址
      * @return String
      */
     private String getLocAddrIndex(String devAddress) {
@@ -222,6 +218,5 @@ public class ScanDeviceUtile {
         }
         return null;
     }
-   
 
 }
