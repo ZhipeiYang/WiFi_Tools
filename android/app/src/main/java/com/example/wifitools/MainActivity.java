@@ -11,11 +11,17 @@ import android.text.TextUtils;
 import android.widget.Toast;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 
 public class MainActivity extends FlutterActivity {
   private static final String CHANNEL = "com.kiko.wifi/act";
+  private static final String EVENT_CHANEL = "com.kiko.wifi/speed_event";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +43,29 @@ public class MainActivity extends FlutterActivity {
         } else {
           Toast.makeText(MainActivity.this, "toast text must not null", Toast.LENGTH_SHORT).show();
         }
-      } else if (call.method.equals("getNetSpeed")) {
-        // 调用测速方法返回一个对象转换来的json字符串
-        //TODO:后期将这些方法重写，换成Event通道，通过Event通道来更新前台ui
-        String s = getNetSpeed();
+      }
+    });
+    new EventChannel(getFlutterView(), EVENT_CHANEL).setStreamHandler(new EventChannel.StreamHandler() {
+      // 创建一个广播接收者
+      SpeedTestController s=new SpeedTestController(getApplicationContext());
+      private BroadcastReceiver netSpeedReceiver;
+      // 监听事件
+      @Override
+      public void onListen(Object arguments, EventChannel.EventSink events) {
+        // 设置接收到广播的处理流程并生成接收者
+        netSpeedReceiver = createNetSpeedReceiver(events);
+        // 添加广播过滤器
+        IntentFilter intentFilter = new IntentFilter();
+        // 设置广播的名字（设置Action，可以添加多个要监听的动作）
+        intentFilter.addAction("speedBroadcast");
+        // 注册广播,传入两个参数， 实例化的广播接受者对象，intent 动作筛选对象
+        registerReceiver(netSpeedReceiver, intentFilter);
+      }
 
-        if (s.length() != 0) {
-          result.success(s);
-        } else {
-          result.error("UNVAILABLE", "NetSpeed JSon is Empty", null);
-        }
+      @Override
+      public void onCancel(Object arguments) {
+        unregisterReceiver(netSpeedReceiver);
+        netSpeedReceiver = null;
       }
     });
   }
@@ -64,7 +83,23 @@ public class MainActivity extends FlutterActivity {
     Gson gson = new Gson();
     String result = gson.toJson(n);
     // System.out.println(result);
-    SpeedTestController c=new SpeedTestController();
+
+    //SpeedTestController c = new SpeedTestController();
     return result;
+  }
+
+  private BroadcastReceiver createNetSpeedReceiver(final EventChannel.EventSink events) {
+    return new BroadcastReceiver() {
+      @Override
+      // 重写接受事件
+      public void onReceive(Context context, Intent intent) {
+        if (intent.getAction().equals("speedBroadcast")) {
+          // 接收到广播，取出里面携带的数据
+          String str = intent.getStringExtra("data");
+          events.success(str);
+          //System.out.println("接收到的广播的数据：" + str);
+        }
+      }
+    };
   }
 }

@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.json.*;
 
+import android.content.Context;
 import android.os.Message;
 import android.os.Handler;
 import android.net.TrafficStats;
@@ -24,6 +25,7 @@ public class SpeedTestController {
     private long total_resultTx;
     private DecimalFormat showFloatFormat = new DecimalFormat("0.00");
     private static final int UPDATE_MSG = 0;
+    private Context context;
     final Handler mHandler = new Handler() {
          @Override
          public void handleMessage(Message msg) {
@@ -31,9 +33,7 @@ public class SpeedTestController {
              case UPDATE_MSG:
                  total_nowRx = TrafficStats.getTotalRxBytes();
                  total_resultRx = total_nowRx - total_preRx;
-                 // Log.d("zbv", "total_resultRx="+total_resultRx);
-                 // tv_download.setText(handleUnit(total_resultRx));
-                 //System.out.println("下载："+handleUnit(total_resultRx));
+                 
                  // 设置下载流量信息
 
                  total_preRx = total_nowRx;
@@ -41,11 +41,8 @@ public class SpeedTestController {
 
                  total_nowTx = TrafficStats.getTotalTxBytes();
                  total_resultTx = total_nowTx - total_preTx;
-                 // Log.d("zbv", "total_resultTx="+total_resultTx);
-                 // tv_upload.setText(handleUnit(total_resultTx));
-                 // 设置上传流量信息
-                 //System.out.println("上传:"+handleUnit(total_resultTx));
-                 speedJson(handleUnit(total_resultTx), handleUnit(total_resultRx));
+                 //用广播将转换得到的json发出去
+                 BroadcastUtile.send(context,speedJson(handleUnit(total_resultTx), handleUnit(total_resultRx))); 
                  // 修改前后数据传送流量信息
                  total_preTx = total_nowTx;
                  break;
@@ -55,11 +52,12 @@ public class SpeedTestController {
              }
          }
      };
-    SpeedTestController(){
+    SpeedTestController(Context context){
+        this.context=context;
         fetchTotalTraffic();
     }
     
-
+    //格式转换，将得到的网速转换为合适的单位，以字符串格式返回
     private String handleUnit(long result) {
         String txt = "";
         double loadSpeed;
@@ -75,7 +73,7 @@ public class SpeedTestController {
         }
         return txt;
     }
-
+    //开启线程获取网速，每秒获取一次
     private void fetchTotalTraffic() {
         new Timer().schedule(new TimerTask() {
 
@@ -85,6 +83,7 @@ public class SpeedTestController {
             }
         }, 1000, 1000);
     }
+    //把扫描得到的上传和下载速度转换为json字串
     private String speedJson(String up,String down){
         NetSpeed ns=new NetSpeed(up,down);
         Gson gson=new Gson();

@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
         showToast("获取列表出错,请检查Wifi网络");
       }
-    } on PlatformException catch (e) {
+    } on PlatformException{
       //print("获取设备列表出错:" + e.toString());
       showToast("获取列表出错，请检查Wifi网络");
     }

@@ -10,7 +10,9 @@ class SpeedTestScreen extends StatefulWidget {
 }
 
 class _SpeedTestScreenState extends State<SpeedTestScreen> {
-  static const platform = const MethodChannel('com.kiko.wifi/act');
+  static const MethodChannel platform = const MethodChannel('com.kiko.wifi/act');
+  static const EventChannel eventChannel = const EventChannel('com.kiko.wifi/speed_event');
+  String speedJson;
   String _up = "--";
   String _down = "--";
   int listFlag = 0;
@@ -36,6 +38,11 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
     } on PlatformException {}
   }
 
+  @override
+  void initState() {
+    super.initState();
+    eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);
+  }
   @override
   Widget build(BuildContext context) {
     var netSpeedWidget = NetSpeedWidget(_up, _down);
@@ -64,6 +71,18 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
     );
   }
 
+  void _onEvent(Object event) {
+    setState(() {
+      speedJson = event;
+      print(speedJson);
+    });
+  }
+
+  void _onError(Object error) {
+    setState(() {
+      speedJson = "网络状态获取失败";
+    });
+  }
   //根据测速结果动态生成展示列表
   _getListView() {
     if (listFlag == 0) {
