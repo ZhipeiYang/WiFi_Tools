@@ -7,6 +7,9 @@ import com.google.gson.GsonBuilder;
 import org.json.*;
 
 import java.util.List;
+
+// import javax.swing.SpinnerDateModel;
+
 import android.text.TextUtils;
 import android.widget.Toast;
 import io.flutter.app.FlutterActivity;
@@ -22,7 +25,7 @@ import android.content.IntentFilter;
 public class MainActivity extends FlutterActivity {
   private static final String CHANNEL = "com.kiko.wifi/act";
   private static final String EVENT_CHANEL = "com.kiko.wifi/speed_event";
-
+  private SpeedTestController s;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -43,15 +46,22 @@ public class MainActivity extends FlutterActivity {
         } else {
           Toast.makeText(MainActivity.this, "toast text must not null", Toast.LENGTH_SHORT).show();
         }
+      } else if(call.method.equals("switchBroadcast")){
+        //传入的cmd为开启广播时，打开广播
+        if(call.hasArgument("cmd")&&call.argument("cmd").toString().equals("true")){
+          s=new SpeedTestController(getApplicationContext());  
+          s.fetchTotalTraffic();
+        }else{//否则关闭广播
+          s.cancelBroadcast();
+        }
       }
     });
     new EventChannel(getFlutterView(), EVENT_CHANEL).setStreamHandler(new EventChannel.StreamHandler() {
-      // 创建一个广播接收者
-      SpeedTestController s=new SpeedTestController(getApplicationContext());
+      // 创建一个广播接收者      
       private BroadcastReceiver netSpeedReceiver;
       // 监听事件
       @Override
-      public void onListen(Object arguments, EventChannel.EventSink events) {
+      public void onListen(Object arguments, EventChannel.EventSink events) {       
         // 设置接收到广播的处理流程并生成接收者
         netSpeedReceiver = createNetSpeedReceiver(events);
         // 添加广播过滤器
@@ -61,7 +71,6 @@ public class MainActivity extends FlutterActivity {
         // 注册广播,传入两个参数， 实例化的广播接受者对象，intent 动作筛选对象
         registerReceiver(netSpeedReceiver, intentFilter);
       }
-
       @Override
       public void onCancel(Object arguments) {
         unregisterReceiver(netSpeedReceiver);
@@ -78,15 +87,15 @@ public class MainActivity extends FlutterActivity {
     return result;
   }
 
-  String getNetSpeed() {
-    NetSpeed n = new NetSpeed("1.0", "2.0");
-    Gson gson = new Gson();
-    String result = gson.toJson(n);
-    // System.out.println(result);
+  // String getNetSpeed() {
+  //   NetSpeed n = new NetSpeed("1.0", "2.0");
+  //   Gson gson = new Gson();
+  //   String result = gson.toJson(n);
+  //   // System.out.println(result);
 
-    //SpeedTestController c = new SpeedTestController();
-    return result;
-  }
+  //   //SpeedTestController c = new SpeedTestController();
+  //   return result;
+  // }
 
   private BroadcastReceiver createNetSpeedReceiver(final EventChannel.EventSink events) {
     return new BroadcastReceiver() {

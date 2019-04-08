@@ -13,39 +13,37 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
   static const MethodChannel platform = const MethodChannel('com.kiko.wifi/act');
   static const EventChannel eventChannel = const EventChannel('com.kiko.wifi/speed_event');
   String speedJson;
-  String _up = "--";
-  String _down = "--";
   int listFlag = 0;
+  bool broadcastFlag=false;
+  NetSpeed _netSpeedShow=new NetSpeed({"down":"0","up":"0"});
   List<NetSpeed> _netSpeed = new List<NetSpeed>(); //测速结果
-  //调用平台代码获取当前网速
-  getNetSpeed() async {
-    String speedJson;
-    try {
-      //通过平台代码获取后端生成的网速信息Json
-      speedJson = await platform.invokeMethod('getNetSpeed');
-      //用得到的Json字符串直接初始化speed对象
-      var speed = NetSpeed(speedJson);
-      //print('对象:' + speed.up + speed.down);
-      setState(() {
-        _up = speed.up;
-        _down = speed.down;
-        _netSpeed.add(speed);
-        if (_netSpeed != null) {
-          listFlag = 1;
-          //print(_netSpeed[0].down);
-        }
-      });
-    } on PlatformException {}
-  }
-
+  //初始化
   @override
   void initState() {
     super.initState();
+    //初始化eventHandler，开启监听
     eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);
   }
   @override
+  void dispose(){
+    //如果页面被销毁前广播时开的，那么关闭广播，否则不作任何响应
+    try{
+      if(broadcastFlag==true){
+        platform.invokeMethod('switchBroadcast',{"cmd":"false"});
+        //print("提示:因页面退出测速广播被关闭");
+      }
+      // }else{
+      //   print("提示：广播本来就是关的，页面退出不作响应");
+      // }
+      
+    }on PlatformException{
+
+    }
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
-    var netSpeedWidget = NetSpeedWidget(_up, _down);
+    var netSpeedWidget = NetSpeedWidget(_netSpeedShow.up,_netSpeedShow.down);
     return Scaffold(
       appBar: AppBar(
         title: Text('测速'),
@@ -55,7 +53,13 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
           GestureDetector(
             //点击时反应
             onTap: () {
-              getNetSpeed();
+              //getNetSpeed();
+
+              //测速广播开关
+              setState(() {
+               broadcastFlag=!broadcastFlag; 
+              });
+              switchBroadcast(broadcastFlag);
             },
             child: Card(
               child: netSpeedWidget,
@@ -70,18 +74,30 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
       ),
     );
   }
-
+  //广播接收到的东西正确时的处理流程
   void _onEvent(Object event) {
     setState(() {
       speedJson = event;
-      print(speedJson);
+      //print(speedJson);
+      _netSpeedShow=new NetSpeed(speedJson);
     });
   }
-
+  //广播接收到错误时的处理流程
   void _onError(Object error) {
     setState(() {
       speedJson = "网络状态获取失败";
     });
+  }
+  //根据开关的状态开启或关闭测速广播
+  void switchBroadcast(bool flag) async{
+    try{
+      await platform.invokeMethod('switchBroadcast',{"cmd":flag==true?"true":"false"});
+    }on PlatformException{
+      //print("错误:开启广播出错");
+      setState(() {
+       broadcastFlag=false; 
+      });
+    }
   }
   //根据测速结果动态生成展示列表
   _getListView() {
@@ -98,7 +114,7 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
       return LoadingWidget();
     }
   }
-
+  //生成上述表的每一项
   _getListTile(String up, String down) {
     return Card(
       child: Row(

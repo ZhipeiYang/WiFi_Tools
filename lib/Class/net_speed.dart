@@ -5,7 +5,7 @@ class NetSpeed {
   String up;
 
   NetSpeed.fromParams({this.down, this.up});
-
+  
   factory NetSpeed(jsonStr) => jsonStr == null
       ? null
       : jsonStr is String
