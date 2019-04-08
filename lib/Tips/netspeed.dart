@@ -29,7 +29,7 @@ class NetSpeedWidget extends StatelessWidget {
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                    "M/s",
+                    "bps",
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   )
                 ],
@@ -59,7 +59,7 @@ class NetSpeedWidget extends StatelessWidget {
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                    "M/s",
+                    "bps",
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   )
                 ],

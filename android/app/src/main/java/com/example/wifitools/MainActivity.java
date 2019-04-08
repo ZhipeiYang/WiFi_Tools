@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.json.*;
 
 import java.util.List;
 import android.text.TextUtils;
@@ -11,7 +12,7 @@ import android.widget.Toast;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
-import org.json.*;
+
 
 public class MainActivity extends FlutterActivity {
   private static final String CHANNEL = "com.kiko.wifi/act";
@@ -38,6 +39,7 @@ public class MainActivity extends FlutterActivity {
         }
       } else if (call.method.equals("getNetSpeed")) {
         // 调用测速方法返回一个对象转换来的json字符串
+        //TODO:后期将这些方法重写，换成Event通道，通过Event通道来更新前台ui
         String s = getNetSpeed();
 
         if (s.length() != 0) {
@@ -62,6 +64,7 @@ public class MainActivity extends FlutterActivity {
     Gson gson = new Gson();
     String result = gson.toJson(n);
     // System.out.println(result);
+    SpeedTestController c=new SpeedTestController();
     return result;
   }
 }
