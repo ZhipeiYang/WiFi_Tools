@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wifitools/Tips/netspeed.dart';
-import 'package:wifitools/Tips/loading.dart';
+import 'package:wifitools/Tips/portscan.dart';
 import 'package:wifitools/Class/net_speed.dart';
-
 class SpeedTestScreen extends StatefulWidget {
   @override
   _SpeedTestScreenState createState() => _SpeedTestScreenState();
@@ -12,11 +11,11 @@ class SpeedTestScreen extends StatefulWidget {
 class _SpeedTestScreenState extends State<SpeedTestScreen> {
   static const MethodChannel platform = const MethodChannel('com.kiko.wifi/act');
   static const EventChannel eventChannel = const EventChannel('com.kiko.wifi/speed_event');
-  String speedJson;
-  int listFlag = 0;
-  bool broadcastFlag=false;
-  NetSpeed _netSpeedShow=new NetSpeed({"down":"0","up":"0"});
-  List<NetSpeed> _netSpeed = new List<NetSpeed>(); //测速结果
+  String speedJson;//从广播传来的实时网速信息json字符串
+  //int listFlag = 0;
+  bool broadcastFlag=false;//广播是否开启状态
+  NetSpeed _netSpeedShow=new NetSpeed({"down":"0","up":"0"});//和展示UI绑定的网速展示类型
+  //List<NetSpeed> _netSpeed = new List<NetSpeed>(); //测速结果
   //初始化
   @override
   void initState() {
@@ -66,9 +65,7 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
             ),
           ),
           //这里获取结果表
-          Expanded(
-            child: _getListView(),
-          )
+          PortScanWidget()
           //_getListView(),
         ],
       ),
@@ -78,7 +75,6 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
   void _onEvent(Object event) {
     setState(() {
       speedJson = event;
-      //print(speedJson);
       _netSpeedShow=new NetSpeed(speedJson);
     });
   }
@@ -100,64 +96,64 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
     }
   }
   //根据测速结果动态生成展示列表
-  _getListView() {
-    if (listFlag == 0) {
-      return Text('当前列表为空，请刷新');
-    } else if (listFlag == 1) {
-      return ListView.builder(
-        itemCount: _netSpeed == null ? 0 : _netSpeed.length,
-        itemBuilder: (BuildContext context, int position) {
-          return _getListTile(_netSpeed[position].up, _netSpeed[position].down);
-        },
-      );
-    } else if (listFlag == -1) {
-      return LoadingWidget();
-    }
-  }
-  //生成上述表的每一项
-  _getListTile(String up, String down) {
-    return Card(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-            child: Row(
-              children: <Widget>[
-                CircleAvatar(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  radius: 10,
-                  child: Icon(
-                    Icons.arrow_upward,
-                    size: 16,
-                  ),
-                ),
-                Text(" 上传:"),
-                Text(up),
-                Text("bps"),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-            child: Row(
-              children: <Widget>[
-                CircleAvatar(
-                  radius: 10,
-                  child: Icon(
-                    Icons.arrow_downward,
-                    size: 16,
-                  ),
-                ),
-                Text(" 下载:"),
-                Text(down),
-                Text("bps"),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+//   _getListView() {
+//     if (listFlag == 0) {
+//       return Text('当前列表为空，请刷新');
+//     } else if (listFlag == 1) {
+//       return ListView.builder(
+//         itemCount: _netSpeed == null ? 0 : _netSpeed.length,
+//         itemBuilder: (BuildContext context, int position) {
+//           return _getListTile(_netSpeed[position].up, _netSpeed[position].down);
+//         },
+//       );
+//     } else if (listFlag == -1) {
+//       return LoadingWidget();
+//     }
+//   }
+//   //生成上述表的每一项
+//   _getListTile(String up, String down) {
+//     return Card(
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: <Widget>[
+//           Container(
+//             margin: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+//             child: Row(
+//               children: <Widget>[
+//                 CircleAvatar(
+//                   backgroundColor: Colors.red,
+//                   foregroundColor: Colors.white,
+//                   radius: 10,
+//                   child: Icon(
+//                     Icons.arrow_upward,
+//                     size: 16,
+//                   ),
+//                 ),
+//                 Text(" 上传:"),
+//                 Text(up),
+//                 Text("bps"),
+//               ],
+//             ),
+//           ),
+//           Container(
+//             margin: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+//             child: Row(
+//               children: <Widget>[
+//                 CircleAvatar(
+//                   radius: 10,
+//                   child: Icon(
+//                     Icons.arrow_downward,
+//                     size: 16,
+//                   ),
+//                 ),
+//                 Text(" 下载:"),
+//                 Text(down),
+//                 Text("bps"),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
 }
