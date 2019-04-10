@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:async';
 
 class PortScanWidget extends StatefulWidget {
   @override
@@ -6,6 +8,7 @@ class PortScanWidget extends StatefulWidget {
 }
 
 class _PortScanWidgetState extends State<PortScanWidget> {
+  static const platform = const MethodChannel("com.kiko.wifi/act");
   var _textStyle = TextStyle(fontSize: 16);
   TextEditingController _ipController = TextEditingController();
   TextEditingController _portController = TextEditingController();
@@ -31,8 +34,9 @@ class _PortScanWidgetState extends State<PortScanWidget> {
                       Expanded(
                           child: TextField(
                             decoration:
-                                InputDecoration(labelText: '域名:'),
-                            style: TextStyle(fontSize: 18.0, color: Colors.blue),                           
+                                InputDecoration(labelText: 'IP地址:'),
+                            style: TextStyle(fontSize: 18.0, color: Colors.blue), 
+                            keyboardType: TextInputType.number,                          
                             controller: _ipController,
                       )),
                     ],
@@ -56,6 +60,7 @@ class _PortScanWidgetState extends State<PortScanWidget> {
                           child: TextField(
                             decoration:
                                 InputDecoration(labelText: '端口:'),
+                            keyboardType: TextInputType.number,
                             style: TextStyle(fontSize: 18.0, color: Colors.blue),                          
                             controller: _portController,
                       )),
@@ -72,9 +77,16 @@ class _PortScanWidgetState extends State<PortScanWidget> {
               ],
             ));
   }
-  void ScanPort() {
+  void ScanPort()async {
     var ipStr = _ipController.text;
     var portStr = _portController.text;
-    print("IP:" + ipStr + " Port:" + portStr);
+    //print("IP:" + ipStr + " Port:" + portStr);
+    try{
+      await platform.invokeMethod("portScan",{"domain":ipStr,"port":portStr});
+    }on PlatformException{
+
+    }
+
+    //await platform.invokeMethod("showToast", {"msg": msg});
   }
 }
