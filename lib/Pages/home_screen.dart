@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   DeviceList _deviceList; //获取到的设备列表就要放在这里
   var listFlag = 0; //列表是否已经初始化的标志
   //通过平台代码获取设备详细信息列表
-  getDevices() async {
+  Future<bool> getDevices() async {
     String devices;
     DeviceList deviceList;
     try {
@@ -24,21 +24,24 @@ class _HomeScreenState extends State<HomeScreen> {
       _deviceList = deviceList;
       if (_deviceList != null) {
         showToast('扫描成功,共有' + _deviceList.list.length.toString() + '个设备');
-        setState(() {
-          listFlag = 1;
-        });
+        // setState(() {
+        //   listFlag = 1;
+        // });
+        return true;
       } else {
-        setState(() {
-          listFlag = 0;
-        });
+        // setState(() {
+        //   listFlag = 0;
+        // });
         showToast("获取列表出错,请检查Wifi网络");
+        return false;
       }
     } on PlatformException{
       //print("获取设备列表出错:" + e.toString());
       showToast("获取列表出错，请检查Wifi网络");
-      setState(() {
-       listFlag=0; 
-      });
+      // setState(() {
+      //  listFlag=0; 
+      // });
+      return false;
     }
   }
 
@@ -67,9 +70,19 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() {
             listFlag = -1;
           });
-          Timer _timer = Timer(Duration(seconds: 1), () {
-            getDevices();
-          });
+         
+            getDevices().then((value){
+              if(value){
+                setState(() {
+                 listFlag=1; 
+                });
+              }else{
+                setState(() {
+                 listFlag=0; 
+                });
+              }
+            });
+          
         },
       ),
     );
