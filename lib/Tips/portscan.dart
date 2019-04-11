@@ -66,7 +66,7 @@ class _PortScanWidgetState extends State<PortScanWidget> {
           ),
         ),
         LimitedBox(
-          maxHeight: 336,
+          maxHeight: 290,
           child: _getPortList(),
         ),
         RaisedButton(
@@ -74,24 +74,57 @@ class _PortScanWidgetState extends State<PortScanWidget> {
           textColor: Colors.white,
           splashColor: Colors.lightBlue,
           child: Text('开始扫描'),
-          onPressed: ScanPort,
+          onPressed: (){
+            var ipStr =  _ipController.text;
+            var portStr = _portController.text;
+            
+            if(ipStr!=null){
+              setState(() {
+              _portBind=PortBind.init();
+              // _portBind.ip=ipStr;
+              _portBind.setIp(ipStr);
+              var checkedPorts=_tileList.list;
+              for (var item in checkedPorts) {
+               if(item.checked){
+                 _portBind.port.add(item.port);
+                }
+              }
+              if(portStr!=null){
+                if(!_portBind.port.contains(int.parse(portStr))){
+                  _portBind.port.add(int.parse(portStr));
+                }  
+              }
+            });
+            }else{
+              print("ipStr NULL");
+            }
+            String s=_portBind.toString();
+            print(s);
+            ScanPortByJson(s);
+          },
         ),
       ],
     ));
   }
+  void ScanPortByJson(String json) async{
+    try{
+      await platform.invokeMapMethod("postScan",{"json":json});
+    }on PlatformException{
 
-  void ScanPort() async {
-    var ipStr = _ipController.text;
-    var portStr = _portController.text;
-    //print("IP:" + ipStr + " Port:" + portStr);
-    try {
-      //TODO:到时候要把这里转换为json，预备传一个PortBind类型转换来的json进去，然后再后端进行处理
-      await platform
-          .invokeMethod("portScan", {"domain": ipStr, "port": portStr});
-    } on PlatformException {}
-
-    //await platform.invokeMethod("showToast", {"msg": msg});
+    }
   }
+  //TODO:完了要淘汰这个函数并替换成上面的ByJson函数进行后台的连通测试
+  // void ScanPort() async {
+  //   var ipStr = _ipController.text;
+  //   var portStr = _portController.text;
+  //   //print("IP:" + ipStr + " Port:" + portStr);
+  //   try {
+  //     await platform
+  //         .invokeMethod("portScan", {"domain": ipStr, "port": portStr});
+  //   } on PlatformException {}
+
+  //   //await platform.invokeMethod("showToast", {"msg": msg});
+  // }
 
   _getPortList() {
     if (_tileListFlag) {

@@ -58,30 +58,33 @@ public class MainActivity extends FlutterActivity {
         }
       } else if (call.method.equals("portScan")) {
         // TODO:这里将域名和端口传入，进行测通，暂时让结果在后台输出，调试完成后再加参数传递到前端
-        if (call.hasArgument("domain") && !TextUtils.isEmpty(call.argument("domain").toString())
-            && call.hasArgument("port")) {
-          String domain = call.argument("domain").toString();
-          int port = Integer.parseInt(call.argument("port").toString());
-          System.out.println(domain + "  " + port);
-          try {
-            PortScanUtile portScan = new PortScanUtile();
-            portScan.connect(domain, port);
-            Timer timer = new Timer();// 实例化Timer类
-            timer.schedule(new TimerTask() {
-              public void run() {
-                if (portScan.getFlag() == true) {
-                  System.out.println("可以通");
-                } else {
-                  System.out.println("通不了");
-                }
-                this.cancel();
-              }
-            }, 100);// 五百毫秒
+        // if (call.hasArgument("domain") && !TextUtils.isEmpty(call.argument("domain").toString())
+        //     && call.hasArgument("port")) {
+        //   String domain = call.argument("domain").toString();
+        //   int port = Integer.parseInt(call.argument("port").toString());
+        //   System.out.println(domain + "  " + port);
+        //   try {
+        //     PortScanUtile portScan = new PortScanUtile();
+        //     portScan.connect(domain, port);
+        //     Timer timer = new Timer();// 实例化Timer类
+        //     timer.schedule(new TimerTask() {
+        //       public void run() {
+        //         if (portScan.getFlag() == true) {
+        //           System.out.println("可以通");
+        //         } else {
+        //           System.out.println("通不了");
+        //         }
+        //         this.cancel();
+        //       }
+        //     }, 100);// 五百毫秒
 
-          } catch (Exception e) {
+        //   } catch (Exception e) {
 
-          }
+        //   }
 
+        // }
+        if(call.hasArgument("json")&&!TextUtils.isEmpty(call.argument("json"))){
+          System.out.println(call.argument("json").toString());
         }
       }
     });

@@ -3,14 +3,17 @@ import 'dart:convert' show json;
 class PortBind {
 
   //ip地址
-  String ip;
+  String ip="";
   //for-each循环可以遍历端口并进行处理
-  List<int> port;
+  List<int> port=List<int>();
 
   PortBind.fromParams({this.ip, this.port});
-
+  @override
+  PortBind.init(){
+    ip="";
+    port=List<int>();
+  }
   factory PortBind(jsonStr) => jsonStr == null ? null : jsonStr is String ? new PortBind.fromJson(json.decode(jsonStr)) : new PortBind.fromJson(jsonStr);
-  
   PortBind.fromJson(jsonRes) {
     ip = jsonRes['ip'];
     port = jsonRes['port'] == null ? null : [];
@@ -23,6 +26,9 @@ class PortBind {
   @override
   String toString() {
     return '{"ip": ${ip != null?'${json.encode(ip)}':'null'},"port": $port}';
+  }
+  setIp(String ipStr){
+    this.ip=ipStr;
   }
 }
 
