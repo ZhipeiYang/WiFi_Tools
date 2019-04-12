@@ -7,51 +7,46 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.List;
+import java.util.ArrayList;
 
 public class PortScanUtile {
-    
-    private  boolean flag = false;
-    public  void connect(String server, int servPort)
-            throws IOException, UnknownHostException, SocketTimeoutException {
-        // 根据传入的server获取地址
-        InetAddress ad = InetAddress.getByName(server);
-        //System.out.println("初始化InetAddrss成功");
-        Socket socket = new Socket();
-        socket.setReceiveBufferSize(8192);
-        socket.setSoTimeout(1000);
-        //System.out.println("初始化套接字成功");
-        // socket.setSoTimeout(2000);
-        SocketAddress address = new InetSocketAddress(server, servPort);
-        //System.out.println("初始化IP地址成功");
-        new Thread(new Runnable() {
-            public volatile boolean exit = false; 
-            @Override
-            public void run() {
-               while(!exit){
-                try {
-                    socket.connect(address, 100);
-                    //System.out.println("连接完成");
-                    setFlag(true);
-                    exit=true;
-                } catch (IOException e) {
-                    //System.out.println("新建一个 socket server " + servPort + "连接失败");
-                    setFlag(false);
-                    exit=true;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    setFlag(false);
-                    exit=true;
+
+    List<Integer> success = new ArrayList<>();
+
+    public void connectByList(String ip, List<Integer> port) {
+        // 创建线程池
+        List<Thread> threadPool = new ArrayList<>();
+        for (int item : port) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Socket socket = new Socket();
+                        socket.setReceiveBufferSize(8192);
+                        socket.setSoTimeout(1000);
+                        SocketAddress address = new InetSocketAddress(ip, item);
+                        socket.connect(address, 500);
+                        success.add(item);
+                    } catch (IOException e) {
+                        System.out.println("新建一个 socket" + ip + " " + item + "连接失败");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-               }
+            });
+            thread.start();
+            threadPool.add(thread);
+        }
+        for (int i = 0; i < threadPool.size(); i++) {
+            try {
+                threadPool.get(i).join();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }).start();  
+        }
+        for (int item : success) {
+            System.out.println(item);
+        }
     }
-
-    private  void setFlag(boolean t) {
-        flag = t;
-    }
-    public  boolean getFlag(){
-        return flag;
-    }
-
 }
