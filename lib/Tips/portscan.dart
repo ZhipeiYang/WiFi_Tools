@@ -65,8 +65,12 @@ class _PortScanWidgetState extends State<PortScanWidget> {
             ],
           ),
         ),
+        // FractionallySizedBox(
+        //   heightFactor: 0.2,
+        //   child: _getPortList(),
+        // ),
         LimitedBox(
-          maxHeight: 290,
+          maxHeight: 290.0,
           child: _getPortList(),
         ),
         RaisedButton(
@@ -89,7 +93,7 @@ class _PortScanWidgetState extends State<PortScanWidget> {
                  _portBind.port.add(item.port);
                 }
               }
-              if(portStr!=null){
+              if(portStr!=null&&portStr!=""){
                 if(!_portBind.port.contains(int.parse(portStr))){
                   _portBind.port.add(int.parse(portStr));
                 }  
@@ -98,9 +102,14 @@ class _PortScanWidgetState extends State<PortScanWidget> {
             }else{
               print("ipStr NULL");
             }
-            String s=_portBind.toString();
-            print(s);
-            ScanPortByJson(s);
+            if(_portBind.port.length!=0){
+              String s=_portBind.toString();
+              print(s);
+              ScanPortByJson(s);
+            }else{
+              print("port null");
+            }
+           
           },
         ),
       ],
@@ -108,7 +117,7 @@ class _PortScanWidgetState extends State<PortScanWidget> {
   }
   void ScanPortByJson(String json) async{
     try{
-      await platform.invokeMapMethod("postScan",{"json":json});
+      await platform.invokeMapMethod("portScan",{"json":json});
     }on PlatformException{
 
     }
