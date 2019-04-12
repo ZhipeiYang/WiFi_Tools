@@ -14,7 +14,7 @@ public class PortScanUtile {
 
     List<Integer> success = new ArrayList<>();
 
-    public void connectByList(String ip, List<Integer> port) {
+    public List<Integer> connectByList(String ip, List<Integer> port) {
         // 创建线程池
         List<Thread> threadPool = new ArrayList<>();
         for (int item : port) {
@@ -45,8 +45,9 @@ public class PortScanUtile {
                 e.printStackTrace();
             }
         }
-        for (int item : success) {
-            System.out.println(item);
-        }
+        // for (int item : success) {
+        //     System.out.println(item);
+        // }
+        return success;
     }
 }

@@ -124,21 +124,24 @@ class _PortScanWidgetState extends State<PortScanWidget> {
 
   void ScanPortByJson(String json) async {
     try {
-      await platform.invokeMapMethod("portScan", {"json": json});
+      List<int> success =
+          await platform.invokeListMethod("portScan", {"json": json});
+     
+      String successPortStr = "已测通的端口:";
+      if (success.length != 0) {
+        for (var item in success) {
+          //print("_success:"+item.toString());
+          successPortStr += item.toString() + " ";
+        }
+      } else {
+        successPortStr += "无";
+      }
+      //print(successPortStr);
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: Text(successPortStr),
+      ));
     } on PlatformException {}
   }
-  //TODO:完了要淘汰这个函数并替换成上面的ByJson函数进行后台的连通测试
-  // void ScanPort() async {
-  //   var ipStr = _ipController.text;
-  //   var portStr = _portController.text;
-  //   //print("IP:" + ipStr + " Port:" + portStr);
-  //   try {
-  //     await platform
-  //         .invokeMethod("portScan", {"domain": ipStr, "port": portStr});
-  //   } on PlatformException {}
-
-  //   //await platform.invokeMethod("showToast", {"msg": msg});
-  // }
 
   _getPortList() {
     if (_tileListFlag) {

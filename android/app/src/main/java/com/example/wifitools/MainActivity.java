@@ -89,16 +89,18 @@ public class MainActivity extends FlutterActivity {
           // System.out.println(call.argument("json").toString());
           //转换成功
           PortBind portBind=getPortBind(call.argument("json").toString());
-          //传过来的IP地址
-          String ip=portBind.getIp();
-          //传过来的要测通的端口List
-          List<Integer> portList=portBind.getPort();
-          //要返回的端口List
-          List<Integer> portSuccess=new ArrayList<>();
+          // //传过来的IP地址
+          // String ip=portBind.getIp();
+          // //传过来的要测通的端口List
+          // List<Integer> portList=portBind.getPort();
           //这里开始测通流程，采用多线程方法
           PortScanUtile portScan=new PortScanUtile();
-         
-            portScan.connectByList(ip,portList);
+          //要返回的端口List
+          List<Integer> portSuccess=portScan.connectByList(portBind.getIp(),portBind.getPort());
+          // for(int item:portSuccess){
+          //   System.out.println(item);
+          // }
+          result.success(portSuccess);  
           
          
           //返回给界面处理结果，交由界面处理展示
