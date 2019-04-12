@@ -44,6 +44,7 @@ public class MainActivity extends FlutterActivity {
           result.error("UNVAILABLE", "Devices JSon is Empty", null);
         }
       } else if (call.method.equals("showToast")) {
+        //根据收到的字符串构建一个toast在前端展示
         if (call.hasArgument("msg") && !TextUtils.isEmpty(call.argument("msg").toString())) {
           Toast.makeText(MainActivity.this, call.argument("msg").toString(), Toast.LENGTH_SHORT).show();
         } else {
@@ -58,32 +59,7 @@ public class MainActivity extends FlutterActivity {
           s.cancelBroadcast();
         }
       } else if (call.method.equals("portScan")) {
-        // TODO:这里将域名和端口传入，进行测通，暂时让结果在后台输出，调试完成后再加参数传递到前端
-        // if (call.hasArgument("domain") && !TextUtils.isEmpty(call.argument("domain").toString())
-        //     && call.hasArgument("port")) {
-        //   String domain = call.argument("domain").toString();
-        //   int port = Integer.parseInt(call.argument("port").toString());
-        //   System.out.println(domain + "  " + port);
-        //   try {
-        //     PortScanUtile portScan = new PortScanUtile();
-        //     portScan.connect(domain, port);
-        //     Timer timer = new Timer();// 实例化Timer类
-        //     timer.schedule(new TimerTask() {
-        //       public void run() {
-        //         if (portScan.getFlag() == true) {
-        //           System.out.println("可以通");
-        //         } else {
-        //           System.out.println("通不了");
-        //         }
-        //         this.cancel();
-        //       }
-        //     }, 100);// 五百毫秒
-
-        //   } catch (Exception e) {
-
-        //   }
-
-        // }
+        // 这里将域名和端口传入，进行测通，结果通过json传递到前端
         if(call.hasArgument("json")&&!TextUtils.isEmpty(call.argument("json"))){
           //获取json字符串成功
           // System.out.println(call.argument("json").toString());
@@ -100,12 +76,8 @@ public class MainActivity extends FlutterActivity {
           // for(int item:portSuccess){
           //   System.out.println(item);
           // }
+           //返回给界面处理结果，交由界面处理展示
           result.success(portSuccess);  
-          
-         
-          //返回给界面处理结果，交由界面处理展示
-
-
         }
       }
     });
@@ -125,7 +97,7 @@ public class MainActivity extends FlutterActivity {
         // 注册广播,传入两个参数， 实例化的广播接受者对象，intent 动作筛选对象
         registerReceiver(netSpeedReceiver, intentFilter);
       }
-
+      //关闭广播的线程
       @Override
       public void onCancel(Object arguments) {
         unregisterReceiver(netSpeedReceiver);
@@ -133,12 +105,12 @@ public class MainActivity extends FlutterActivity {
       }
     });
   }
-
+  //通过传过来的json字符串解析得到PortBind类型的对象
   PortBind getPortBind(String json){
     Gson gson=new Gson();
     return gson.fromJson(json,PortBind.class);
   }
-
+  //扫描局域网内所有设备信息
   String getDevices() {
     ScanDeviceUtile s = new ScanDeviceUtile();
     Gson gson = new Gson();
@@ -147,16 +119,7 @@ public class MainActivity extends FlutterActivity {
     return result;
   }
 
-  // String getNetSpeed() {
-  // NetSpeed n = new NetSpeed("1.0", "2.0");
-  // Gson gson = new Gson();
-  // String result = gson.toJson(n);
-  // // System.out.println(result);
-
-  // //SpeedTestController c = new SpeedTestController();
-  // return result;
-  // }
-
+  //负责接收网速检测线程传输过来的广播然后返回给前台
   private BroadcastReceiver createNetSpeedReceiver(final EventChannel.EventSink events) {
     return new BroadcastReceiver() {
       @Override

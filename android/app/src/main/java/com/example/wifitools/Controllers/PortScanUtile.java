@@ -17,6 +17,7 @@ public class PortScanUtile {
     public List<Integer> connectByList(String ip, List<Integer> port) {
         // 创建线程池
         List<Thread> threadPool = new ArrayList<>();
+        //给每个端口开启线程测通
         for (int item : port) {
             Thread thread = new Thread(new Runnable() {
                 @Override
@@ -38,6 +39,7 @@ public class PortScanUtile {
             thread.start();
             threadPool.add(thread);
         }
+        //强制主线程等待所有子线程完成后再处理
         for (int i = 0; i < threadPool.size(); i++) {
             try {
                 threadPool.get(i).join();
@@ -48,6 +50,7 @@ public class PortScanUtile {
         // for (int item : success) {
         //     System.out.println(item);
         // }
+        //返回已经测通的端口号
         return success;
     }
 }
