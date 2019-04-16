@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'Pages/home_screen.dart';
 import 'Pages/speedtest_screen.dart';
-import 'Pages/tools_screen.dart';
 import 'Pages/settings_screen.dart';
-
+import 'Pages/toolspage.dart';
 
 class BottomNavigationWidget extends StatefulWidget {
   final Widget child;
@@ -22,7 +21,7 @@ class _BottomNavigationWidgetState extends State<BottomNavigationWidget> {
   void initState(){
     pageList..add(HomeScreen())
             ..add(SpeedTestScreen())
-            ..add(ToolScreen())
+            ..add(ToolsPage())
             ..add(SettingScreen());
     super.initState();
   }

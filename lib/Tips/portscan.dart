@@ -73,6 +73,9 @@ class _PortScanWidgetState extends State<PortScanWidget> {
           maxHeight: 290.0,
           child: _getPortList(),
         ),
+        // Flexible(
+        //   child: _getPortList(),
+        // ),
         RaisedButton(
           color: Colors.blue,
           textColor: Colors.white,
