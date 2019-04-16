@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:wifitools/Class/conn.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sqflite/sqflite.dart';
-
+import 'package:flutter/services.dart';
 class NewConnection extends StatefulWidget {
   _NewConnectionState createState() => _NewConnectionState();
 }
@@ -75,6 +75,8 @@ class _NewConnectionState extends State<NewConnection> {
               ),
               TextField(
                 decoration: InputDecoration(labelText: '端口:'),
+                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                //inputFormatters:[],
                 keyboardType: TextInputType.number,
                 style: TextStyle(fontSize: 18.0, color: Colors.blue),
                 controller: _portController,

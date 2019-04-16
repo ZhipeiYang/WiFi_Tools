@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:wifitools/Class/conn.dart';
 import 'package:sqflite/sqflite.dart';
-
+import 'package:flutter/services.dart';
 class UpdateConnection extends StatefulWidget {
   ConnectInfo conn;
   UpdateConnection({this.conn}):super();
@@ -90,6 +90,7 @@ class _UpdateConnectionState extends State<UpdateConnection> {
               ),
               TextField(
                 decoration: InputDecoration(labelText: '端口:'),
+                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
                 keyboardType: TextInputType.number,
                 style: TextStyle(fontSize: 18.0, color: Colors.blue),
                 controller: _portController,

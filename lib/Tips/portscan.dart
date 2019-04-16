@@ -58,6 +58,7 @@ class _PortScanWidgetState extends State<PortScanWidget> {
               Expanded(
                   child: TextField(
                 decoration: InputDecoration(labelText: '端口:'),
+                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
                 keyboardType: TextInputType.number,
                 style: TextStyle(fontSize: 18.0, color: Colors.blue),
                 controller: _portController,
