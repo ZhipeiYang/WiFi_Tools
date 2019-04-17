@@ -174,7 +174,12 @@ class _ToolsPageState extends State<ToolsPage> {
       ));
     } else {
       return Card(
-        child: Text('请先选择或创建用户'),
+        child:Container(        
+          alignment: Alignment.topRight,
+          padding: EdgeInsets.only(top: 10,bottom: 10,right: 30),
+          width: MediaQuery.of(context).size.width,
+          child:  Text('请先选择或创建用户↗',style: TextStyle(fontSize: 18,color: Colors.grey),),
+        ),
       );
     }
   }
