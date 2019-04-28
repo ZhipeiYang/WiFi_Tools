@@ -54,10 +54,10 @@ class _BottomNavigationWidgetState extends State<BottomNavigationWidget> {
           ),
           BottomNavigationBarItem(
             icon:Icon(
-              Icons.settings,
+              Icons.info_outline,
               color: _bottom_navigation_color,
             ),
-            title: Text('设置',style: TextStyle(color: _bottom_navigation_color),)
+            title: Text('关于',style: TextStyle(color: _bottom_navigation_color),)
           ),
         ],
         //高亮的部分

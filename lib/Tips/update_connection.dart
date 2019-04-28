@@ -17,6 +17,14 @@ class _UpdateConnectionState extends State<UpdateConnection> {
   TextEditingController _hostController = TextEditingController();
   TextEditingController _portController = TextEditingController();
   TextEditingController _authController = TextEditingController();
+
+
+  FocusNode _nickFocusNode = FocusNode();
+  FocusNode _userFocusNode = FocusNode();
+  FocusNode _hostFocusNode = FocusNode();
+  FocusNode _portFocusNode = FocusNode();
+  FocusNode _authFocusNode = FocusNode();
+
   ConnectInfo _connectInfo;
   int _authFlag = 0;
   String _uuid;
@@ -42,14 +50,22 @@ class _UpdateConnectionState extends State<UpdateConnection> {
           child: Column(
             children: <Widget>[
               TextField(
+                focusNode: _nickFocusNode,
                 decoration: InputDecoration(labelText: '昵称:'),
                 style: TextStyle(fontSize: 18.0, color: Colors.blue),
                 controller: _nickController,
+                onEditingComplete: () =>
+                    FocusScope.of(context).requestFocus(_userFocusNode),
+                onSubmitted: (value){},
               ),
               TextField(
+                focusNode: _userFocusNode,
                 decoration: InputDecoration(labelText: '用户名:'),
                 style: TextStyle(fontSize: 18.0, color: Colors.blue),
                 controller: _userController,
+                onEditingComplete: () =>
+                    FocusScope.of(context).requestFocus(_authFocusNode),
+                    onSubmitted: (value){},
               ),
               Row(
                 children: <Widget>[
@@ -79,21 +95,51 @@ class _UpdateConnectionState extends State<UpdateConnection> {
                 ],
               ),
               TextField(
+                focusNode: _authFocusNode,
                 decoration: InputDecoration(labelText: '密钥:'),
                 style: TextStyle(fontSize: 18.0, color: Colors.blue),
                 controller: _authController,
+                onEditingComplete: () =>
+                    FocusScope.of(context).requestFocus(_hostFocusNode),
+                    onSubmitted: (value){},
               ),
               TextField(
+                focusNode: _hostFocusNode,
                 decoration: InputDecoration(labelText: '地址:'),
                 style: TextStyle(fontSize: 18.0, color: Colors.blue),
                 controller: _hostController,
+                onEditingComplete: () =>
+                    FocusScope.of(context).requestFocus(_portFocusNode),
+                    onSubmitted: (value){
+                     // FocusScope.of(context).requestFocus(_portFocusNode);
+                    },
               ),
               TextField(
-                decoration: InputDecoration(labelText: '端口:'),
-                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                keyboardType: TextInputType.number,
-                style: TextStyle(fontSize: 18.0, color: Colors.blue),
-                controller: _portController,
+                focusNode: _portFocusNode,
+                  decoration: InputDecoration(labelText: '端口:'),
+                  inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                  //inputFormatters:[],
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(fontSize: 18.0, color: Colors.blue),
+                  controller: _portController,
+                  onSubmitted: (n) async {
+                        if (_initConnectInfo()) {
+                          String databasePath = await getDatabasesPath();
+                          String path = join(databasePath, 'connInfo.db');
+                          ConnectInfoUtil util = ConnectInfoUtil();
+                          util.open(path).then((value){
+                            util.update(_connectInfo).then((onValue){
+                              if(onValue>0){
+                                //print('更新成功');
+                                Navigator.pop(context,'更新成功!');
+                              }else{
+                                //print('更新失败');
+                                Navigator.pop(context,'更新失败!');
+                              }                            
+                            });
+                          });                        
+                        }
+                  }
               ),
               Row(
                 children: <Widget>[

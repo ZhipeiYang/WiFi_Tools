@@ -4,9 +4,9 @@ class SettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("设置")),
+      appBar: AppBar(title: Text("关于")),
       body: Center(
-        child: Text('这是设置页面'),
+        child: Text('这是关于页面'),
       ),
     );
   }

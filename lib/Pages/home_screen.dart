@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String devices;
     DeviceList deviceList;
     try {
+      //showToast("正在扫描，请稍后");
       devices = await platform.invokeMethod('getDevices');
       deviceList = DeviceList(devices);
       _deviceList = deviceList;
@@ -35,24 +36,41 @@ class _HomeScreenState extends State<HomeScreen> {
         showToast("获取列表出错,请检查Wifi网络");
         return false;
       }
-    } on PlatformException{
+    } on PlatformException {
       //print("获取设备列表出错:" + e.toString());
       showToast("获取列表出错，请检查Wifi网络");
       // setState(() {
-      //  listFlag=0; 
+      //  listFlag=0;
       // });
       return false;
     }
   }
 
   //通过平台代码弹出Toast提示信息
-  showToast(String msg) async {
+  Future showToast(String msg) async {
     try {
       await platform.invokeMethod("showToast", {"msg": msg});
     } on PlatformException catch (e) {
       print("Toast出错:" + e.toString());
+      return false;
     }
+    return true;
   }
+
+  // @override
+  // void initState() {
+  //   //Scaffold.of(context).showSnackBar(SnackBar(content: Text('请稍候'),));
+  //   platform.invokeMethod("getDevices").then((onValue) {
+  //     DeviceList deviceList = DeviceList(onValue);
+  //     setState(() {
+  //       _deviceList = deviceList;
+  //       if (deviceList != null) {
+  //         listFlag = 1;
+  //       }
+  //     });
+  //   });
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -66,23 +84,19 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         tooltip: 'Refresh',
         child: Icon(Icons.refresh),
-        onPressed: () {
-          setState(() {
-            listFlag = -1;
+        onPressed: () {        
+          //Scaffold.of(context).showSnackBar(SnackBar(content: Text('正在刷新，请稍候'),));
+          getDevices().then((value) {
+            if (value) {
+              setState(() {
+                listFlag = 1;
+              });
+            } else {
+              setState(() {
+                listFlag = 0;
+              });
+            }
           });
-         
-            getDevices().then((value){
-              if(value){
-                setState(() {
-                 listFlag=1; 
-                });
-              }else{
-                setState(() {
-                 listFlag=0; 
-                });
-              }
-            });
-          
         },
       ),
     );
@@ -91,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
   //动态构建ListView用以展示搜索到的设备IP
   _getListView() {
     if (listFlag == 0) {
-      return Text('当前列表为空，请刷新');
+      return Text('请点击刷新按钮开始扫描');
     } else if (listFlag == 1) {
       return ListView.builder(
         itemCount: _deviceList.list == null ? 0 : _deviceList.list.length,

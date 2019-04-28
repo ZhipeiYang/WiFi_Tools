@@ -113,7 +113,8 @@ class _SelectConnState extends State<SelectConn> {
                   //print(value);
                   if(value!=null){
                     Scaffold.of(context).showSnackBar(SnackBar(content: Text("$value"),));
-                  }                  
+                  }
+                                 
                 });
               } else if (value == 2) {
                 String dataBasePath;
@@ -127,16 +128,17 @@ class _SelectConnState extends State<SelectConn> {
                       if (onValue > 0) {
                         //print('delete success');
                         Scaffold.of(context).showSnackBar(SnackBar(content: Text('已删除!'),));
-                        initList();
+                        //initList();
                       }else{
                         Scaffold.of(context).showSnackBar(SnackBar(content: Text('删除失败!'),));
-                        initList();
+                        //initList();
                       }
                     });
                     //util.close();
                   });
                 });
               }
+              initList();
             },
             itemBuilder: (BuildContext context) => <PopupMenuItem<int>>[
                   PopupMenuItem<int>(
