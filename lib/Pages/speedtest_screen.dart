@@ -49,7 +49,7 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
       appBar: AppBar(
         title: Text('测速'),
       ),
-      body: Column(
+      body: ListView(
         children: <Widget>[
           GestureDetector(
             //点击时反应
