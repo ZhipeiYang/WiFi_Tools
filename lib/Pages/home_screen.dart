@@ -123,7 +123,10 @@ class _HomeScreenState extends State<HomeScreen> {
     //print(s);
     return GestureDetector(
         onTap: () {
-          showToast('你点击了' + d.getName());
+          //showToast('你点击了' + d.getName());
+          platform.invokeMethod('getMac',{"ip":d.getIp()}).then((value){
+            showToast('MAC:'+value);
+          });
         },
         child: Card(
           child: ListTile(

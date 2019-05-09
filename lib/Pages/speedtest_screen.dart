@@ -22,6 +22,8 @@ class _SpeedTestScreenState extends State<SpeedTestScreen> {
     super.initState();
     //初始化eventHandler，开启监听
     eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);
+    broadcastFlag=true;
+    switchBroadcast(true);
   }
   @override
   void dispose(){

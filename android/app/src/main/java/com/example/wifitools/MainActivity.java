@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Locale;
+import java.io.BufferedReader;
+import java.io.FileReader;
 // import javax.swing.SpinnerDateModel;
 
 import android.text.TextUtils;
@@ -79,6 +82,13 @@ public class MainActivity extends FlutterActivity {
            //返回给界面处理结果，交由界面处理展示
           result.success(portSuccess);  
         }
+      }else if(call.method.equals("getMac")){
+        if(call.hasArgument("ip")&&!TextUtils.isEmpty(call.argument("ip"))){
+          String str=readArp(call.argument("ip").toString());
+          result.success(str);
+        }else{
+          result.error("error","Input Error",null);
+        }
       }
     });
     new EventChannel(getFlutterView(), EVENT_CHANEL).setStreamHandler(new EventChannel.StreamHandler() {
@@ -116,6 +126,7 @@ public class MainActivity extends FlutterActivity {
     Gson gson = new Gson();
     String result;
     result = gson.toJson(s.scan());
+    //readArp();
     return result;
   }
 
@@ -134,4 +145,42 @@ public class MainActivity extends FlutterActivity {
       }
     };
   }
+  private String readArp(String myIp) {
+    String myMac="";
+    try {
+        BufferedReader br = new BufferedReader(
+                new FileReader("/proc/net/arp"));
+        String line = "";
+        String ip = "";
+        String flag = "";
+        String mac = "";
+        
+        while ((line = br.readLine()) != null) {
+            try {
+                line = line.trim();
+                if (line.length() < 63) continue;
+                if (line.toUpperCase(Locale.US).contains("IP")) continue;
+                ip = line.substring(0, 17).trim();
+                
+                flag = line.substring(29, 32).trim();
+                mac = line.substring(41, 63).trim();
+                if (mac.contains("00:00:00:00:00:00")) continue;
+                //Log.e("scanner", "readArp: mac= "+mac+" ; ip= "+ip+" ;flag= "+flag);
+                //System.out.println("ip:"+ip+" mac:"+mac);
+                if(ip.equals(myIp)){
+                  myMac=mac;
+                }
+            } catch (Exception e) {
+            }
+        }
+        br.close();    
+    } catch(Exception e) {
+    }
+    if(!myMac.equals("")){
+      return myMac;
+    }else{
+      return "error";
+    }
+  }
+
 }
