@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         tooltip: 'Refresh',
         child: Icon(Icons.refresh),
-        onPressed: () {        
+        onPressed: () {
           //Scaffold.of(context).showSnackBar(SnackBar(content: Text('正在刷新，请稍候'),));
           getDevices().then((value) {
             if (value) {
@@ -124,8 +124,48 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
         onTap: () {
           //showToast('你点击了' + d.getName());
-          platform.invokeMethod('getMac',{"ip":d.getIp()}).then((value){
-            showToast('MAC:'+value);
+          platform.invokeMethod('getMac', {"ip": d.getIp()}).then((value) {
+            showDialog<Null>(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('设备信息',style: TextStyle(color: Colors.blue),),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text('设备名:\n' + d.getName()),
+                        Text('\nIP:\n' + d.getIp()),
+                        Text('\nMAC:\n' + value)
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('复制'),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(
+                            text: '设备名: ' +
+                                d.getName() +
+                                '\nIP: ' +
+                                d.getIp() +
+                                '\nMAC: ' +
+                                value));
+                        showToast('复制成功');
+                      },
+                    ),
+                    FlatButton(
+                      child: Text('确定'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            ).then((val) {
+              print(val);
+            });
           });
         },
         child: Card(
